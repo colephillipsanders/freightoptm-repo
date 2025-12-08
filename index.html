@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Capstone: Freight Cost & CO₂ Optimization</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #0f172a;
+      --bg-alt: #020617;
+      --card: #111827;
+      --accent: #38bdf8;
+      --accent-soft: rgba(56, 189, 248, 0.15);
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --border-subtle: #1f2937;
+      --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.9);
+      --radius-xl: 1.5rem;
+      --radius-lg: 1rem;
+      --radius-pill: 999px;
+      --max-width: 1100px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #1f2937 0, #020617 55%, #000 100%);
+      color: var(--text-main);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* Top nav */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(16px);
+      background: linear-gradient(to bottom, rgba(15, 23, 42, 0.92), rgba(15, 23, 42, 0.6), transparent);
+      border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+    }
+
+    .nav-inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .logo {
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #e5e7eb;
+    }
+    .logo span {
+      color: var(--accent);
+    }
+
+    nav {
+      display: flex;
+      gap: 0.75rem;
+      font-size: 0.85rem;
+    }
+
+    nav a {
+      padding: 0.45rem 0.9rem;
+      border-radius: var(--radius-pill);
+      color: var(--text-muted);
+      border: 1px solid transparent;
+    }
+
+    nav a:hover {
+      color: var(--text-main);
+      border-color: rgba(148, 163, 184, 0.3);
+      background: radial-gradient(circle at top, rgba(56, 189, 248, 0.08), transparent 60%);
+    }
+
+    .nav-cta {
+      background: linear-gradient(135deg, #38bdf8, #22c55e);
+      color: #0f172a;
+      font-weight: 600;
+      border: none;
+    }
+    .nav-cta:hover {
+      background: linear-gradient(135deg, #0ea5e9, #16a34a);
+      color: #020617;
+    }
+
+    main {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 1.5rem 1.5rem 4rem 1.5rem;
+    }
+
+    /* Hero / intro */
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 2.1fr) minmax(0, 1.6fr);
+      gap: 2.5rem;
+      margin-top: 2.5rem;
+      margin-bottom: 3.5rem;
+      align-items: center;
+    }
+
+    @media (max-width: 900px) {
+      .hero {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .hero-text {
+      position: relative;
+    }
+
+    .hero-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.2rem 0.75rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.35), transparent 60%);
+      margin-bottom: 0.7rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .hero-pill-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: radial-gradient(circle at center, #22c55e, #16a34a);
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.18);
+    }
+
+    h1 {
+      font-size: clamp(2.2rem, 3.1vw, 2.9rem);
+      letter-spacing: -0.035em;
+      margin-bottom: 0.6rem;
+    }
+
+    h1 span.gradient {
+      background: linear-gradient(135deg, #38bdf8, #22c55e);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .hero-subtitle {
+      font-size: 0.98rem;
+      color: var(--text-muted);
+      max-width: 36rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 1.4rem;
+    }
+
+    .chip {
+      padding: 0.25rem 0.7rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      color: #e5e7eb;
+      background: radial-gradient(circle at top, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.95));
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      padding: 0.55rem 1.1rem;
+      border-radius: var(--radius-pill);
+      font-size: 0.85rem;
+      font-weight: 500;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text-main);
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #38bdf8, #22c55e);
+      color: #020617;
+      border-color: transparent;
+      box-shadow: 0 10px 26px rgba(56, 189, 248, 0.37);
+    }
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #0ea5e9, #16a34a);
+    }
+    .btn-ghost:hover {
+      background: rgba(15, 23, 42, 0.95);
+    }
+
+    .hero-footnote {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .hero-card {
+      background: radial-gradient(circle at top, rgba(56, 189, 248, 0.24), transparent 60%),
+                  linear-gradient(145deg, #020617, #020617);
+      border-radius: var(--radius-xl);
+      padding: 1.4rem 1.3rem;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      box-shadow: var(--shadow-soft);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background-image:
+        radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.25), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(34, 197, 94, 0.25), transparent 55%);
+      opacity: 0.75;
+      pointer-events: none;
+    }
+
+    .hero-card-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .hero-card-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+    .hero-card-badge {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      color: #e5e7eb;
+      opacity: 0.9;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.7rem;
+      margin-bottom: 0.9rem;
+      font-size: 0.78rem;
+    }
+
+    .metric-card {
+      background: rgba(15, 23, 42, 0.92);
+      border-radius: 0.9rem;
+      padding: 0.5rem 0.7rem;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+    }
+    .metric-label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-bottom: 0.1rem;
+    }
+    .metric-value {
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+    .metric-tag {
+      font-size: 0.7rem;
+      color: #a5b4fc;
+      margin-top: 0.1rem;
+    }
+
+    .hero-divider {
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(148, 163, 184, 0.7), transparent);
+      margin: 0.4rem 0 0.7rem;
+      opacity: 0.8;
+    }
+
+    .hero-card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.74rem;
+      color: var(--text-muted);
+    }
+
+    .legend {
+      display: flex;
+      gap: 0.4rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--accent);
+    }
+    .dot.green {
+      background: #22c55e;
+    }
+
+    /* Section layout */
+    section {
+      margin-bottom: 3rem;
+    }
+
+    .section-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .section-heading h2 {
+      font-size: 1.35rem;
+      letter-spacing: -0.01em;
+    }
+
+    .section-heading p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      max-width: 26rem;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+      gap: 1.7rem;
+    }
+
+    @media (max-width: 900px) {
+      .grid-2 {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .card {
+      background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.98), #020617);
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      padding: 1rem 1.1rem;
+      box-shadow: 0 12px 32px rgba(15, 23, 42, 0.8);
+    }
+
+    .card h3 {
+      font-size: 0.95rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .card p {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin-top: 0.4rem;
+    }
+
+    .pill {
+      font-size: 0.75rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      color: var(--text-main);
+    }
+
+    ul {
+      list-style: none;
+      margin-top: 0.3rem;
+    }
+
+    li {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 0.3rem;
+      display: flex;
+      gap: 0.45rem;
+    }
+
+    li::before {
+      content: "▹";
+      color: var(--accent);
+      font-size: 0.9rem;
+      margin-top: 0.15rem;
+    }
+
+    /* Link lists */
+    .link-list {
+      font-size: 0.85rem;
+    }
+
+    .link-list a {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .badge {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      padding: 0.1rem 0.45rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      color: var(--text-muted);
+      margin-left: 0.35rem;
+    }
+
+    /* Footer */
+    footer {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 1.5rem 2.5rem 1.5rem;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .footer-inner {
+      border-top: 1px solid rgba(148, 163, 184, 0.2);
+      padding-top: 1rem;
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .footer-inner span {
+      opacity: 0.9;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    /* Smooth scroll */
+    html {
+      scroll-behavior: smooth;
+    }
+
+  </style>
+</head>
+<body>
+  <!-- Top Nav -->
+  <header>
+    <div class="nav-inner">
+      <div class="logo">
+        Capstone <span>2024–25</span>
+      </div>
+      <nav>
+        <a href="#overview">Overview</a>
+        <a href="#data-methods">Data & Methods</a>
+        <a href="#models">Models</a>
+        <a href="#results">Results</a>
+        <a href="#artifacts" class="nav-cta">Paper & Assets</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section class="hero" id="overview">
+      <div class="hero-text">
+        <div class="hero-pill">
+          <div class="hero-pill-dot"></div>
+          Freight + CO₂ | FAF5 Capstone
+        </div>
+        <h1>
+          Bypassing Forecasting for
+          <span class="gradient">Freight Cost & CO₂ Optimization</span>
+        </h1>
+        <p class="hero-subtitle">
+          This capstone project uses FAF5 freight data to estimate transportation cost and emissions,
+          compare mode choices (road, rail, intermodal), and explore multi-objective optimization
+          strategies that consider both dollars and CO₂.
+        </p>
+
+        <div class="hero-tags">
+          <div class="chip">FAF5.7.1 (United States freight)</div>
+          <div class="chip">Random Forests & Regression</div>
+          <div class="chip">Cost & CO₂ per tonne-km</div>
+          <div class="chip">Big Data Analytics Capstone</div>
+        </div>
+
+        <div class="hero-actions">
+          <!-- Replace # with your actual links once you have them -->
+          <a class="btn btn-primary" href="#artifacts">
+            View Paper & Slides
+          </a>
+          <a class="btn btn-ghost" href="#artifacts">
+            Explore Notebooks & Code
+          </a>
+        </div>
+        <div class="hero-footnote">
+          Built as part of a graduate-level Big Data Analytics capstone project.
+        </div>
+      </div>
+
+      <!-- Hero Metric Card -->
+      <aside class="hero-card" aria-label="Project snapshot">
+        <div class="hero-card-inner">
+          <div class="hero-card-header">
+            <div class="hero-card-title">
+              Project Snapshot
+            </div>
+            <div class="hero-card-badge">FAF5 2024 Subset</div>
+          </div>
+
+          <div class="hero-grid">
+            <div class="metric-card">
+              <div class="metric-label">Records used</div>
+              <div class="metric-value">~ N rows</div>
+              <div class="metric-tag">FAF5 domestic flows</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">Modes modeled</div>
+              <div class="metric-value">Road · Rail · Intermodal</div>
+              <div class="metric-tag">Mode choice classification</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">Targets</div>
+              <div class="metric-value">Cost & CO₂ per shipment</div>
+              <div class="metric-tag">Regression & estimation</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">Focus</div>
+              <div class="metric-value">Multi-objective trade-offs</div>
+              <div class="metric-tag">Cost vs emissions</div>
+            </div>
+          </div>
+
+          <div class="hero-divider"></div>
+
+          <div class="hero-card-footer">
+            <div class="legend">
+              <span class="legend-item">
+                <span class="dot"></span> Cost optimization
+              </span>
+              <span class="legend-item">
+                <span class="dot green"></span> CO₂ reduction
+              </span>
+            </div>
+            <div>
+              Last updated: <strong>Dec&nbsp;2025</strong>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- Data & Methods -->
+    <section id="data-methods">
+      <div class="section-heading">
+        <h2>Data & Methods</h2>
+        <p>
+          The project starts from the full FAF5.7.1 freight flows table, filters to a 2024-style subset,
+          and engineers mode-specific cost and CO₂ estimates at the shipment level.
+        </p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>Data sources</h3>
+          <p>
+            Primary data: FAF5 freight flows by domestic regions, including tonnage, value, distance,
+            and mode. Additional assumptions are used to derive cost and emissions factors.
+          </p>
+          <ul>
+            <li>FAF domestic regions (<code>dms_orig</code>, <code>dms_dest</code>)</li>
+            <li>Mode codes and names (road, rail, intermodal)</li>
+            <li>Commodity (<code>sctg2</code>), trade type, distance bands</li>
+            <li>Tons, ton-miles, distance (miles / km)</li>
+            <li>Mode-specific cost &amp; CO₂ per tonne-km</li>
+          </ul>
+          <div class="pill-row">
+            <span class="pill">Pandas preprocessing</span>
+            <span class="pill">Chunked CSV reading</span>
+            <span class="pill">Feature engineering</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Methodology</h3>
+          <p>
+            The pipeline cleans the raw FAF5 file, computes estimated transportation cost and CO₂,
+            and prepares separate feature sets for mode choice and cost/emission prediction.
+          </p>
+          <ul>
+            <li>Filtering to a 2024 subset of relevant flows</li>
+            <li>Deriving cost / CO₂ from tonne-km and mode factors</li>
+            <li>Splitting into train/test sets for ML models</li>
+            <li>Using pipelines for preprocessing and scaling</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Models -->
+    <section id="models">
+      <div class="section-heading">
+        <h2>Models & Experiments</h2>
+        <p>
+          The capstone experiments include mode choice classification, cost prediction, and
+          multi-objective optimization that incorporates CO₂ emissions into decision-making.
+        </p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>Mode choice classification</h3>
+          <p>
+            A Random Forest classifier predicts the likely transportation mode (road, rail,
+            intermodal) given origin/destination, distance, commodity, and value.
+          </p>
+          <ul>
+            <li>Scikit-learn <code>RandomForestClassifier</code> with preprocessing pipeline</li>
+            <li>Evaluation with accuracy, precision/recall, and confusion matrix</li>
+            <li>Helps understand where rail or intermodal may be viable alternatives to road</li>
+          </ul>
+          <div class="pill-row">
+            <span class="pill">Random Forest</span>
+            <span class="pill">Classification report</span>
+            <span class="pill">Confusion matrix</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Cost & CO₂ modeling</h3>
+          <p>
+            Regression models estimate total transportation cost and emissions, and a combined
+            cost function explores trade-offs between dollars and kg CO₂e.
+          </p>
+          <ul>
+            <li>Baseline cost model using engineered cost per tonne-km</li>
+            <li>CO₂ as an additional factor rather than a single objective</li>
+            <li>Multi-objective experiments: blended cost + emissions</li>
+          </ul>
+          <div class="pill-row">
+            <span class="pill">Regression</span>
+            <span class="pill">CO₂ per tonne-km</span>
+            <span class="pill">Multi-objective loss</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Results -->
+    <section id="results">
+      <div class="section-heading">
+        <h2>Key Results & Visualizations</h2>
+        <p>
+          This section summarizes performance metrics and visualizations that compare modes,
+          trade-offs, and potential cost/CO₂ savings for selected corridors and commodities.
+        </p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>Model performance</h3>
+          <p>
+            Placeholder – add plots and tables from your notebook:
+          </p>
+          <ul>
+            <li>Mode choice accuracy and class-wise performance</li>
+            <li>Cost prediction error (e.g., MAE, RMSE)</li>
+            <li>Scenarios where rail or intermodal reduce CO₂ with acceptable cost</li>
+          </ul>
+          <p style="margin-top:0.5rem;font-size:0.8rem;">
+            You can export figures as PNGs and reference them here:
+            <code>&lt;img src="images/mode_confusion_matrix.png" alt="Confusion matrix"&gt;</code>
+          </p>
+        </div>
+
+        <div class="card">
+          <h3>Scenario insights</h3>
+          <p>
+            Example narrative (customize with your findings):
+          </p>
+          <ul>
+            <li>Certain long-haul corridors show strong CO₂ savings from shifting to rail</li>
+            <li>For short distances, road remains cost-efficient with limited emissions gains</li>
+            <li>Intermodal offers a compromise where full rail is not feasible</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Artifacts: Notebooks, Paper, Slides -->
+    <section id="artifacts">
+      <div class="section-heading">
+        <h2>Paper, Slides, & Code</h2>
+        <p>
+          All project artifacts are open for review, including the final report, presentation,
+          and Jupyter/Colab notebooks used for data processing and modeling.
+        </p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>Written deliverables</h3>
+          <div class="link-list">
+            <!-- Replace these hrefs with actual paths once you upload files to the repo -->
+            <a href="docs/final_capstone_paper.pdf">
+              Final Capstone Paper (PDF)
+              <span class="badge">Report</span>
+            </a>
+            <a href="docs/capstone_presentation.pdf">
+              Presentation Slides
+              <span class="badge">Slides</span>
+            </a>
+            <a href="docs/ethnography_or_appendix.pdf">
+              Additional Appendices / Ethnography
+              <span class="badge">Appendix</span>
+            </a>
+          </div>
+          <p style="font-size:0.8rem;margin-top:0.7rem;color:var(--text-muted);">
+            Tip: create a <code>docs/</code> folder in this repo and upload your PDFs there.
+            The links above will work once the filenames match.
+          </p>
+        </div>
+
+        <div class="card">
+          <h3>Notebooks, code, & dashboards</h3>
+          <div class="link-list">
+            <!-- Replace these with real links -->
+            <a href="notebooks/faf5_preprocessing.ipynb">
+              FAF5 Preprocessing Notebook
+              <span class="badge">Jupyter</span>
+            </a>
+            <a href="notebooks/mode_choice_model.ipynb">
+              Mode Choice Classification Notebook
+              <span class="badge">Jupyter</span>
+            </a>
+            <a href="notebooks/cost_co2_multiobjective.ipynb">
+              Cost & CO₂ Optimization Notebook
+              <span class="badge">Jupyter</span>
+            </a>
+            <a href="https://your-arcgis-or-dashboard-link-here">
+              Interactive Map / Dashboard
+              <span class="badge">External</span>
+            </a>
+          </div>
+          <p style="font-size:0.8rem;margin-top:0.7rem;color:var(--text-muted);">
+            For Google Colab, you can also link directly to the notebook on GitHub using the
+            standard <strong>“Open in Colab”</strong> URL format.
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <span>
+        &copy; 2024–2025 &middot; Freight Cost &amp; CO₂ Optimization Capstone.
+      </span>
+      <div class="footer-links">
+        <a href="https://github.com/YOUR-USERNAME/YOUR-REPO">View on GitHub</a>
+        <a href="#overview">Back to top</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
