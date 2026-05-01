@@ -2,7 +2,7 @@
 
 Welcome to the capstone project repository! This project uses FAF5 freight data to estimate transportation cost and emissions, compare mode choices (road, rail, intermodal), and explore multi-objective optimization strategies.
 
-## 📁 Repository Structure
+##  Repository Structure
 
 ```
 freightoptm-repo/
@@ -26,7 +26,7 @@ freightoptm-repo/
 └── .gitignore                     # Git ignore rules for Python/Jupyter
 ```
 
-## 🚀 Getting Started
+##  Getting Started
 
 1. **Upload PDFs** to the `docs/` folder
    - Final capstone paper
@@ -48,7 +48,7 @@ freightoptm-repo/
    - Cost vs. emissions trade-off plots
    - Corridor-specific analysis charts
 
-## 📋 Project Overview
+##  Project Overview
 
 **Title:** Bypassing Forecasting for Freight Cost & CO₂ Optimization
 
@@ -58,13 +58,13 @@ freightoptm-repo/
 - **Targets:** Cost per shipment, CO₂ emissions per tonne-km
 - **Approach:** Random Forests for mode choice, regression for cost/emissions, multi-objective optimization
 
-## 🔗 Links & References
+##  Links & References
 
 - View the live portfolio: `index.html`
 - All links in the portfolio are pre-configured to point to files in this repository
 - Once you upload files, update the links if filenames differ from the defaults
 
-## 📝 Notes
+##  Notes
 
 - This repo uses Git LFS for large CSV files (if needed)
 - `.gitignore` is configured for Python, Jupyter, and common data science workflows
@@ -74,3 +74,5 @@ freightoptm-repo/
 
 **Last Updated:** April 2026  
 **Status:** Repository initialized and ready for content upload
+
+
